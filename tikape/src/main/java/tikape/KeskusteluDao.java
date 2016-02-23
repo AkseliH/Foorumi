@@ -5,11 +5,11 @@ import java.sql.*;
 
 public class KeskusteluDao implements Dao<Keskustelu, Integer> {
 
-    private Database db;
+    private Database database;
     private Dao<Alue, Integer> alueDao;
 
-    public KeskusteluDao(Database db, Dao<Alue, Integer> alueDao) {
-        this.db = db;
+    public KeskusteluDao(Database database, Dao<Alue, Integer> alueDao) {
+        this.database = database;
         this.alueDao = alueDao;
     }
 
@@ -18,22 +18,26 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
     
     @Override
     public Keskustelu findOne(Integer key) throws SQLException{
-        Connection connection = db.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu WHERE keskusteluid = ?");
-        stmt.setObject(1, key);
+        Connection connection = database.getConnection();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM Keskustelu WHERE keskusteluid = ?");
+        statement.setObject(1, key);
 
-        ResultSet rs = stmt.executeQuery();
-        boolean hasOne = rs.next();
+        ResultSet results = statement.executeQuery();
+        boolean hasOne = results.next();
         if (!hasOne) {
             return null;
         }
 
-        Integer keskusteluId = rs.getInt("keskusteluid");
-        String otsikko = rs.getString("otsikko");
-        Alue alue = alueDao.findOne(rs.getInt("alueid"));
+        Integer keskusteluId = results.getInt("keskusteluid");
+        String otsikko = results.getString("otsikko");
+        Alue alue = alueDao.findOne(results.getInt("alueid"));
 
         Keskustelu keskustelu = new Keskustelu(keskusteluId, otsikko);
         keskustelu.setAlue(alue);
+        
+        results.close();
+        statement.close();
+        connection.close();
         
         return keskustelu;
     }
@@ -41,19 +45,19 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
     public Keskustelu findOneWithViestit(Integer key) throws SQLException {
         Keskustelu keskustelu = this.findOne(key);
 
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Viesti WHERE keskusteluid = ? ORDER BY aika ASC");
-        stmt.setObject(1, keskustelu.getKeskusteluId());
-        ResultSet rs = stmt.executeQuery();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM Viesti WHERE keskusteluid = ? ORDER BY aika ASC");
+        statement.setObject(1, keskustelu.getKeskusteluId());
+        ResultSet results = statement.executeQuery();
         
         List<Viesti> viestit = new ArrayList<>();
         
-        while (rs.next()) {
-            Integer viestiId = rs.getInt("viestiid");
-            String sisalto = rs.getString("sisalto");
-            String nimimerkki = rs.getString("nimimerkki");
-            Timestamp aika = rs.getTimestamp("aika");
+        while (results.next()) {
+            Integer viestiId = results.getInt("viestiid");
+            String sisalto = results.getString("sisalto");
+            String nimimerkki = results.getString("nimimerkki");
+            Timestamp aika = results.getTimestamp("aika");
             
             Viesti viesti = new Viesti(viestiId, sisalto, nimimerkki, aika);
             viestit.add(viesti);
@@ -61,8 +65,8 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
 
         keskustelu.setViestit(viestit);
         
-        rs.close();
-        stmt.close();
+        results.close();
+        statement.close();
         connection.close();
         
         return keskustelu;
@@ -70,7 +74,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
 
     @Override
     public List<Keskustelu> findAll() throws SQLException {
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu");
         ResultSet rs = stmt.executeQuery();
 
@@ -103,7 +107,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
             muuttujat.append(", ?");
         }
 
-        Connection con = db.getConnection();
+        Connection con = database.getConnection();
         PreparedStatement stmt = con.prepareStatement("SELECT * FROM Keskustelu WHERE keskusteluid IN (" + muuttujat + ")");
         int laskuri = 1;
         for (Integer key : keys) {
@@ -118,31 +122,35 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
             String otsikko = rs.getString("otsikko");
             keskustelut.add(new Keskustelu(keskusteluId, otsikko));
         }
+        
+        rs.close();
+        stmt.close();
+        con.close();
 
         return keskustelut;
     }
 
     @Override
     public void delete(Integer key) throws SQLException {
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         
-        PreparedStatement stmt = connection.prepareStatement("DELETE * FROM Keskustelu WHERE keskusteluid = ?");
-        stmt.setObject(1, key);
-        stmt.executeUpdate();
+        PreparedStatement statement = connection.prepareStatement("DELETE * FROM Keskustelu WHERE keskusteluid = ?");
+        statement.setObject(1, key);
+        statement.executeUpdate();
         
-        stmt.close();
+        statement.close();
         connection.close();
     }
     
     public void insert(Integer alueId, String otsikko) throws SQLException {
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         
-        PreparedStatement stmt = connection.prepareStatement("INSERT INTO Keskustelu (alueid, otsikko) VALUES (?, ?)");
-        stmt.setObject(1, alueId);
-        stmt.setObject(2, otsikko);
-        stmt.executeUpdate();
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO Keskustelu (alueid, otsikko) VALUES (?, ?)");
+        statement.setObject(1, alueId);
+        statement.setObject(2, otsikko);
+        statement.executeUpdate();
         
-        stmt.close();
+        statement.close();
         connection.close(); 
     }
 }

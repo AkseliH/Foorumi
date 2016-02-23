@@ -5,17 +5,17 @@ import java.sql.*;
 
 public class ViestiDao implements Dao<Viesti, Integer> {
 
-    private Database db;
+    private Database database;
     private Dao<Keskustelu, Integer> keskusteluDao;
 
-    public ViestiDao(Database db, Dao<Keskustelu, Integer> keskusteluDao) {
-        this.db = db;
+    public ViestiDao(Database database, Dao<Keskustelu, Integer> keskusteluDao) {
+        this.database = database;
         this.keskusteluDao = keskusteluDao;
     }
 
     @Override
     public Viesti findOne(Integer key) throws SQLException {
-        Connection con = db.getConnection();
+        Connection con = database.getConnection();
         PreparedStatement stmt = con.prepareStatement("SELECT * FROM Viesti WHERE viestiid = ?");
         stmt.setObject(1, key);
 
@@ -43,7 +43,7 @@ public class ViestiDao implements Dao<Viesti, Integer> {
 
     @Override
     public List<Viesti> findAll() throws SQLException {
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Viesti");
         ResultSet rs = stmt.executeQuery();
 
@@ -78,7 +78,7 @@ public class ViestiDao implements Dao<Viesti, Integer> {
             muuttujat.append(", ?");
         }
 
-        Connection con = db.getConnection();
+        Connection con = database.getConnection();
         PreparedStatement stmt = con.prepareStatement("SELECT * FROM Viesti WHERE viestiid IN (" + muuttujat + ")");
         int laskuri = 1;
         for (Integer key : keys) {
@@ -95,33 +95,38 @@ public class ViestiDao implements Dao<Viesti, Integer> {
             Timestamp aika = rs.getTimestamp("aika");
             viestit.add(new Viesti(viestiId, sisalto, nimimerkki, aika));
         }
+        
+        rs.close();
+        stmt.close();
+        con.close();
 
         return viestit;
     }
 
     @Override
     public void delete(Integer key) throws SQLException {
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         
-        PreparedStatement stmt = connection.prepareStatement("DELETE * FROM Viesti WHERE viestiid = ?");
-        stmt.setObject(1, key);
-        stmt.executeUpdate();
+        PreparedStatement statement = connection.prepareStatement("DELETE * FROM Viesti WHERE viestiid = ?");
+        statement.setObject(1, key);
+        statement.executeUpdate();
         
-        stmt.close();
+        statement.close();
         connection.close();
     }
     
     public void insert(Integer keskusteluId, String sisalto, Timestamp aika, String nimimerkki) throws SQLException {
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         
-        PreparedStatement stmt = connection.prepareStatement("INSERT INTO Keskustelu (alueid, otsikko) VALUES (?, ?, ?, ?)");
-        stmt.setObject(1, keskusteluId);
-        stmt.setObject(2, sisalto);
-        stmt.setObject(3, aika.getTime());
-        stmt.setObject(4, nimimerkki);
-        stmt.executeUpdate();
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO Viesti "
+                + "(keskusteluid, sisalto, aika, nimimerkki) VALUES (?, ?, ?, ?)");
+        statement.setObject(1, keskusteluId);
+        statement.setObject(2, sisalto);
+        statement.setObject(3, aika.getTime());
+        statement.setObject(4, nimimerkki);
+        statement.executeUpdate();
         
-        stmt.close();
+        statement.close();
         connection.close(); 
     }
 }

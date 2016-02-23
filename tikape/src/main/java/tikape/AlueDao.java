@@ -5,54 +5,54 @@ import java.sql.*;
 
 public class AlueDao implements Dao<Alue, Integer> {
 
-    private Database db;
+    private Database database;
 
-    public AlueDao(Database db) {
-        this.db = db;
+    public AlueDao(Database database) {
+        this.database = database;
     }
 
     @Override
     public Alue findOne(Integer key) throws SQLException {
-        Connection con = db.getConnection();
-        PreparedStatement stmt = con.prepareStatement("SELECT * FROM Alue WHERE alueid = ?");
-        stmt.setObject(1, key);
+        Connection connection = database.getConnection();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM Alue WHERE alueid = ?");
+        statement.setObject(1, key);
 
-        ResultSet rs = stmt.executeQuery();
-        boolean hasOne = rs.next();
+        ResultSet results = statement.executeQuery();
+        boolean hasOne = results.next();
         if (!hasOne) {
             return null;
         }
 
-        Integer alueId = rs.getInt("alueid");
-        String nimi = rs.getString("nimi");
+        Integer alueId = results.getInt("alueid");
+        String nimi = results.getString("nimi");
 
-        Alue a = new Alue(alueId, nimi);
+        Alue alue = new Alue(alueId, nimi);
         
-        rs.close();
-        stmt.close();
-        con.close();
+        results.close();
+        statement.close();
+        connection.close();
         
-        return a;
+        return alue;
     }
     
     public Alue findOneWithKeskustelut(Integer key) throws SQLException {
         Alue alue = this.findOne(key);
         
-        Connection con = db.getConnection();
-        PreparedStatement stmt = con.prepareStatement(
+        Connection connection = database.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
                 "SELECT *, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
                     + "FROM Keskustelu LEFT JOIN Viesti ON Viesti.keskusteluid = Keskustelu.keskusteluid "
                     + "WHERE Keskustelu.alueid = ? GROUP BY Keskustelu.keskusteluid ORDER BY viimeisinViesti DESC");
-        stmt.setObject(1, alue.getAlueId());        
-        ResultSet rs = stmt.executeQuery();
+        statement.setObject(1, alue.getAlueId());        
+        ResultSet results = statement.executeQuery();
         
         List<Keskustelu> keskustelut = new ArrayList<>();
         
-        while (rs.next()) {
-            Integer keskusteluId = rs.getInt("keskusteluid");
-            String otsikko = rs.getString("otsikko");
-            Timestamp viimeisinViesti = rs.getTimestamp("viimeisinViesti");
-            int viestienMaara = rs.getInt("viestienMaara");
+        while (results.next()) {
+            Integer keskusteluId = results.getInt("keskusteluid");
+            String otsikko = results.getString("otsikko");
+            Timestamp viimeisinViesti = results.getTimestamp("viimeisinViesti");
+            int viestienMaara = results.getInt("viestienMaara");
             
             Keskustelu keskustelu = new Keskustelu(keskusteluId, otsikko, viimeisinViesti, viestienMaara);
             keskustelu.setAlue(alue);
@@ -62,38 +62,38 @@ public class AlueDao implements Dao<Alue, Integer> {
 
         alue.setKeskustelut(keskustelut);
         
-        rs.close();
-        stmt.close();
-        con.close();
+        results.close();
+        statement.close();
+        connection.close();
         
         return alue;
     }
     @Override
     public List<Alue> findAll() throws SQLException {
-        Connection con = db.getConnection();
-        PreparedStatement stmt = con.prepareStatement(""
-                + "SELECT *, SUM(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
+        Connection connection = database.getConnection();
+        PreparedStatement statement = connection.prepareStatement(""
+                + "SELECT *, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
                 + "FROM Alue LEFT JOIN Keskustelu ON Alue.alueid = Keskustelu.alueid "
                 + "LEFT JOIN Viesti ON Keskustelu.keskusteluid = Viesti.keskusteluid "
                 + "GROUP BY Alue.alueid ORDER BY viimeisinViesti DESC");
 
-        ResultSet rs = stmt.executeQuery();
+        ResultSet results = statement.executeQuery();
         
         List<Alue> alueet = new ArrayList<>();
         
-        while (rs.next()) {
-            Integer alueId = rs.getInt("alueid");
-            String nimi = rs.getString("nimi");
-            Timestamp viimeisinViesti = rs.getTimestamp("viimeisinViesti");
-            int viestienMaara = rs.getInt("viestienMaara");
+        while (results.next()) {
+            Integer alueId = results.getInt("alueid");
+            String nimi = results.getString("nimi");
+            Timestamp viimeisinViesti = results.getTimestamp("viimeisinViesti");
+            int viestienMaara = results.getInt("viestienMaara");
             
             Alue alue = new Alue(alueId, nimi, viimeisinViesti, viestienMaara);
             alueet.add(alue);
         }
 
-        rs.close();
-        stmt.close();
-        con.close();
+        results.close();
+        statement.close();
+        connection.close();
 
         return alueet;
     }
@@ -109,7 +109,7 @@ public class AlueDao implements Dao<Alue, Integer> {
             muuttujat.append(", ?");
         }
 
-        Connection con = db.getConnection();
+        Connection con = database.getConnection();
         PreparedStatement stmt = con.prepareStatement("SELECT * FROM Alue WHERE alueid IN (" + muuttujat + ")");
         int laskuri = 1;
         for (Integer key : keys) {
@@ -124,30 +124,34 @@ public class AlueDao implements Dao<Alue, Integer> {
             String nimi = rs.getString("nimi");
             alueet.add(new Alue(alueId, nimi));
         }
+        
+        rs.close();
+        stmt.close();
+        con.close();
 
         return alueet;
     }
 
     @Override
     public void delete(Integer key) throws SQLException {
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         
-        PreparedStatement stmt = connection.prepareStatement("DELETE * FROM Alue WHERE alueid = ?");
-        stmt.setObject(1, key);
-        stmt.executeUpdate();
+        PreparedStatement statement = connection.prepareStatement("DELETE * FROM Alue WHERE alueid = ?");
+        statement.setObject(1, key);
+        statement.executeUpdate();
         
-        stmt.close();
+        statement.close();
         connection.close();
     }
     
     public void insert(String nimi) throws SQLException {
-        Connection connection = db.getConnection();
+        Connection connection = database.getConnection();
         
-        PreparedStatement stmt = connection.prepareStatement("INSERT INTO Alue (nimi) VALUES (?)");
-        stmt.setObject(1, nimi);
-        stmt.executeUpdate();
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO Alue (nimi) VALUES (?)");
+        statement.setObject(1, nimi);
+        statement.executeUpdate();
         
-        stmt.close();
+        statement.close();
         connection.close(); 
     }
 }

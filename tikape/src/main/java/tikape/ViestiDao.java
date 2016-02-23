@@ -43,11 +43,9 @@ public class ViestiDao implements Dao<Viesti, Integer> {
 
     @Override
     public List<Viesti> findAll() throws SQLException {
-        Connection con = db.getConnection();
-        PreparedStatement stmt = con.prepareStatement("SELECT * FROM Viesti");
+        Connection connection = db.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Viesti");
         ResultSet rs = stmt.executeQuery();
-
-        Map<Integer, List<Viesti>> keskustelunViestit = new HashMap<>();
 
         List<Viesti> viestit = new ArrayList<>();
 
@@ -58,26 +56,13 @@ public class ViestiDao implements Dao<Viesti, Integer> {
             String nimimerkki = rs.getString("nimimerkki");
             Timestamp aika = rs.getTimestamp("aika");
 
-            Viesti v = new Viesti(viestiId, sisalto, nimimerkki, aika);
-            viestit.add(v);
-
-            Integer keskusteluId = rs.getInt("keskusteluid");
-
-            if (!keskustelunViestit.containsKey(keskusteluId)) {
-                keskustelunViestit.put(keskusteluId, new ArrayList<>());
-            }
-            keskustelunViestit.get(keskusteluId).add(v);
+            Viesti viesti = new Viesti(viestiId, sisalto, nimimerkki, aika);
+            viestit.add(viesti);
         }
 
         rs.close();
         stmt.close();
-        con.close();
-
-        for (Keskustelu keskustelu : this.keskusteluDao.findAllIn(keskustelunViestit.keySet())) {
-            for (Viesti viesti : keskustelunViestit.get(keskustelu.getId())) {
-                viesti.setKeskustelu(keskustelu);
-            }
-        }
+        connection.close();
 
         return viestit;
     }
@@ -116,6 +101,27 @@ public class ViestiDao implements Dao<Viesti, Integer> {
 
     @Override
     public void delete(Integer key) throws SQLException {
-        // ei toteutettu
+        Connection connection = db.getConnection();
+        
+        PreparedStatement stmt = connection.prepareStatement("DELETE * FROM Viesti WHERE viestiid = ?");
+        stmt.setObject(1, key);
+        stmt.executeUpdate();
+        
+        stmt.close();
+        connection.close();
+    }
+    
+    public void insert(Integer keskusteluId, String sisalto, Timestamp aika, String nimimerkki) throws SQLException {
+        Connection connection = db.getConnection();
+        
+        PreparedStatement stmt = connection.prepareStatement("INSERT INTO Keskustelu (alueid, otsikko) VALUES (?, ?, ?, ?)");
+        stmt.setObject(1, keskusteluId);
+        stmt.setObject(2, sisalto);
+        stmt.setObject(3, aika.getTime());
+        stmt.setObject(4, nimimerkki);
+        stmt.executeUpdate();
+        
+        stmt.close();
+        connection.close(); 
     }
 }

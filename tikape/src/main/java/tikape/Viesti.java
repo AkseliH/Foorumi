@@ -51,4 +51,9 @@ public class Viesti {
     public void setKeskustelu(Keskustelu keskustelu) {
         this.keskustelu = keskustelu;
     }
+    
+    @Override
+    public String toString() {
+        return viestiId + " " + sisalto + " " + nimimerkki + " " + aika;
+    }
 } 

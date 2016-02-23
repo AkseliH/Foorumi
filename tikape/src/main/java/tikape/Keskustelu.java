@@ -7,15 +7,33 @@ public class Keskustelu {
     private Integer keskusteluId;
     private String otsikko;
     private Alue alue;
+    private int viestienMaara;
+    private Timestamp viimeisinViesti;
     private List<Viesti> viestit;
     
     public Keskustelu(Integer keskusteluId, String otsikko) {
         this.keskusteluId = keskusteluId;
         this.otsikko = otsikko;
-        viestit = new ArrayList<>();
     }
     
-    public Integer getId() {
+    public Keskustelu(Integer keskusteluId, String otsikko, Timestamp viimeisinViesti,
+                Integer viestienMaara) {
+        this.keskusteluId = keskusteluId;
+        this.otsikko = otsikko;
+        this.viimeisinViesti = viimeisinViesti;
+        this.viestienMaara = viestienMaara;
+    }
+    
+    public Keskustelu(Integer keskusteluId, String otsikko, Timestamp viimeisinViesti,
+                Integer viestienMaara, List<Viesti> viestit) {
+        this.keskusteluId = keskusteluId;
+        this.otsikko = otsikko;
+        this.viimeisinViesti = viimeisinViesti;
+        this.viestit = viestit;
+        this.viestienMaara = viestienMaara;
+    }
+    
+    public Integer getKeskusteluId() {
         return keskusteluId;
     }
     
@@ -41,5 +59,18 @@ public class Keskustelu {
     
     public void setViestit(List<Viesti> viestit) {
         this.viestit = viestit;
+    }
+
+    public int getViestienMaara() {
+        return viestienMaara;
+    }
+
+    public Timestamp getViimeisinViesti() {
+        return viimeisinViesti;
+    }
+    
+    @Override
+    public String toString() {
+        return keskusteluId + " " + otsikko + " " + viestienMaara + " " + viimeisinViesti;
     }
 } 

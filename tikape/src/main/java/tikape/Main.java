@@ -2,6 +2,7 @@ package tikape;
 
 import java.sql.*;
 import java.util.*;
+import static spark.Spark.*;
 
 public class Main {
 
@@ -23,7 +24,9 @@ public class Main {
             System.out.println(viesti);
         }
         
-        
+        get("/alue/:id", (req, res) -> {
+            return " " + req.params(":id");
+        });
         
     }
 }

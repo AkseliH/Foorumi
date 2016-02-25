@@ -3,6 +3,8 @@ package tikape;
 import java.sql.*;
 import java.util.*;
 import static spark.Spark.*;
+import spark.ModelAndView;
+import spark.template.thymeleaf.ThymeleafTemplateEngine;
 
 public class Main {
 
@@ -27,6 +29,14 @@ public class Main {
         get("/alue/:id", (req, res) -> {
             return " " + req.params(":id");
         });
+        
+        get("/keskustelutesti", (req, res) -> {
+            HashMap map = new HashMap<>();
+            map.put("keskustelu", keskusteluDao.findOneWithViestit(4));
+
+            return new ModelAndView(map, "index");
+        }, new ThymeleafTemplateEngine());
+    
         
     }
 }

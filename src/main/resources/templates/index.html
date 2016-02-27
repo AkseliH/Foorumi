@@ -1,0 +1,31 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Foorumi</title>  
+        <meta charset="utf-8" />
+    </head>
+
+    <body>
+        <a href="http://localhost:4567/"><font size="7" color="red" face="verdana">Foorumi</font></a>
+        <h2 th:text="${teksti}">testi</h2>
+        
+        <table>
+            <tr>
+                <th> Otsikko </th>
+                <th> Viestien maara </th>
+                <th> Viimeisin viesti </th>
+            </tr>
+            <tr th:each="alue : ${alueet}">
+                <td> <a th:href="@{~/alue/{id}(id=${alue.alueId})}"> <span th:text="${alue.nimi}">linkki</span></a><span th:text="${nimi}">o</span></td>
+                <td th:text="${alue.viestienMaara}"> viestienMaara </td>
+                <td th:text="${alue.viimeisinViesti}"> viimeisinViesti </td>
+                
+            </tr>
+        </table>
+
+        
+        
+
+    </body>
+</html>

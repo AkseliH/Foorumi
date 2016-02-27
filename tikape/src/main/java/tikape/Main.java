@@ -26,17 +26,24 @@ public class Main {
             System.out.println(viesti);
         }
         
+        
         get("/alue/:id", (req, res) -> {
-            return " " + req.params(":id");
-        });
-        
-        get("/keskustelutesti", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("keskustelu", keskusteluDao.findOneWithViestit(4));
+            int alueid = Integer.parseInt(req.params(":id"));
+            map.put("alue", alueDao.findOne(alueid).getNimi());
+            map.put("keskustelut", alueDao.findOneWithKeskustelut(alueid).getKeskustelut());
 
-            return new ModelAndView(map, "index");
-        }, new ThymeleafTemplateEngine());
-    
+            return new ModelAndView(map, "alue");
+        }, new ThymeleafTemplateEngine()); 
         
+        
+        get("/keskustelu/:id", (req, res) -> {
+            HashMap map = new HashMap<>();
+            int keskusteluid = Integer.parseInt(req.params(":id"));
+            map.put("keskustelu", keskusteluDao.findOne(keskusteluid).getOtsikko());
+            map.put("viestit", keskusteluDao.findOneWithViestit(keskusteluid).getViestit());
+            
+            return new ModelAndView(map, "keskustelu");
+        }, new ThymeleafTemplateEngine());         
     }
 }

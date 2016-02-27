@@ -1,0 +1,21 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title> Foorumi </title>
+        <meta charset="utf-8" />
+    </head>
+
+    <body>
+        <h4 th:text="${keskustelu}"> Keskustelu </h4>
+        
+        <ol>
+            <li th:each="viesti : ${viestit}"> 
+                <span th:text="${viesti.sisalto}"> sisalto </span> 
+                <span> t.</span>
+                <span th:text="${viesti.nimimerkki}"> nimimerkki </span> 
+            </li>
+        </ol>
+
+    </body>
+</html>

@@ -35,15 +35,17 @@ public class AlueDao implements Dao<Alue, Integer> {
         return alue;
     }
     
-    public Alue findOneWithKeskustelut(Integer key) throws SQLException {
+    public Alue findOneWithKeskustelut(Integer key, Integer sivu) throws SQLException {
         Alue alue = this.findOne(key);
         
         Connection connection = database.getConnection();
         PreparedStatement statement = connection.prepareStatement(
                 "SELECT *, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
                     + "FROM Keskustelu LEFT JOIN Viesti ON Viesti.keskusteluid = Keskustelu.keskusteluid "
-                    + "WHERE Keskustelu.alueid = ? GROUP BY Keskustelu.keskusteluid ORDER BY viimeisinViesti DESC");
-        statement.setObject(1, alue.getAlueId());        
+                    + "WHERE Keskustelu.alueid = ? GROUP BY Keskustelu.keskusteluid ORDER BY viimeisinViesti DESC "
+                    + "LIMIT 10 OFFSET ?");
+        statement.setObject(1, alue.getAlueId()); 
+        statement.setObject(2, (sivu - 1)*10); 
         ResultSet results = statement.executeQuery();
         
         List<Keskustelu> keskustelut = new ArrayList<>();
@@ -75,7 +77,7 @@ public class AlueDao implements Dao<Alue, Integer> {
                 + "SELECT *, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
                 + "FROM Alue LEFT JOIN Keskustelu ON Alue.alueid = Keskustelu.alueid "
                 + "LEFT JOIN Viesti ON Keskustelu.keskusteluid = Viesti.keskusteluid "
-                + "GROUP BY Alue.alueid ORDER BY viimeisinViesti DESC");
+                + "GROUP BY Alue.alueid ORDER BY Alue.nimi ASC");
 
         ResultSet results = statement.executeQuery();
         

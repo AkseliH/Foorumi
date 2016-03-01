@@ -24,5 +24,16 @@
             </tr>
         </table>
         
+        <h4>Lisää keskustelu:</h4>
+        
+        <form method="POST" th:action="@{~/alue/{id}(id=${alueid})}">
+            Otsikko:<br/>
+            <input type="text" name="otsikko"/><br/>
+            Sisältö:<br/>
+            <input type="text" name="sisalto"/><br/>
+            Nimimerkki:<br/>
+            <input type="text" name="nimimerkki"/><br/>
+            <input type="submit" value="Lisää keskustelu"/>
+        </form>
     </body>
 </html>

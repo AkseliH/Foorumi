@@ -42,13 +42,15 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         return keskustelu;
     }
     
-    public Keskustelu findOneWithViestit(Integer key) throws SQLException {
+    public Keskustelu findOneWithViestit(Integer key, Integer sivu) throws SQLException {
         Keskustelu keskustelu = this.findOne(key);
 
         Connection connection = database.getConnection();
         
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM Viesti WHERE keskusteluid = ? ORDER BY aika ASC");
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM Viesti WHERE keskusteluid = ? ORDER BY aika ASC "
+                + "LIMIT 10 OFFSET ?");
         statement.setObject(1, keskustelu.getKeskusteluId());
+        statement.setObject(2, (sivu - 1)*10);
         ResultSet results = statement.executeQuery();
         
         List<Viesti> viestit = new ArrayList<>();
@@ -149,6 +151,38 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         statement.setObject(1, alueId);
         statement.setObject(2, otsikko);
         statement.executeUpdate();
+        
+        statement.close();
+        connection.close(); 
+    }
+    
+    public void insertWithViesti(Integer alueId, String otsikko, String sisalto, Timestamp aika, String nimimerkki) throws SQLException {
+        Connection connection = database.getConnection();
+        
+        PreparedStatement statement = connection.prepareStatement("BEGIN TRANSACTION");
+        statement.execute();
+        
+        try {
+            statement = connection.prepareStatement("INSERT INTO Keskustelu (alueid, otsikko) VALUES (?, ?);");
+            statement.setObject(1, alueId);
+            statement.setObject(2, otsikko);
+            statement.executeUpdate();
+
+            statement = connection.prepareStatement("INSERT INTO Viesti (keskusteluid, sisalto, aika, nimimerkki) "
+                    + "VALUES ((SELECT last_insert_rowid()), ?, ?, ?);");
+            statement.setObject(1, sisalto);
+            statement.setObject(2, aika.getTime());
+            statement.setObject(3, nimimerkki);
+            statement.executeUpdate();
+            
+            statement = connection.prepareStatement("COMMIT;");
+            statement.execute();
+
+        
+        } catch (SQLException e) {
+            statement = connection.prepareStatement("ROLLBACK;");
+            statement.execute();
+        }
         
         statement.close();
         connection.close(); 

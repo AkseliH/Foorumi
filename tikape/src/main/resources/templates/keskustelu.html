@@ -11,7 +11,9 @@
         <a href="http://localhost:4567/"><font size="7" color="red" face="verdana">Foorumi</font></a>
         <h2 th:text="${teksti}">testi</h2>
         
-        <h4 th:text="${keskustelu}"> Keskustelu </h4>
+        <h4> <a th:href="@{~/alue/{id}(id=${alue.alueId})}"><span th:text="${alue.nimi}"> Alue </span></a>: 
+            <span th:text="${keskustelu}"> Keskustelu </span>
+        </h4>
         
         <ol>
             <li th:each="viesti : ${viestit}"> 
@@ -20,5 +22,15 @@
                 <span th:text="${viesti.nimimerkki}"> nimimerkki </span> 
             </li>
         </ol>
+        
+        <h4>Lisää viesti:</h4>
+        
+        <form method="POST" th:action="@{~/keskustelu/{id}(id=${keskusteluid})}">
+            Sisältö:<br/>
+            <input type="text" name="sisalto"/><br/>
+            Nimimerkki:<br/>
+            <input type="text" name="nimimerkki"/><br/>
+            <input type="submit" value="Lisää viesti"/>
+        </form>
     </body>
 </html>

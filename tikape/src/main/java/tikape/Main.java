@@ -27,6 +27,15 @@ public class Main {
         }
         
         
+        get("/", (req, res) -> {
+            HashMap map = new HashMap<>();
+            map.put("teksti", "Keskustelualueet:");
+            List alueet = alueDao.findAll();
+            map.put("alueet", alueet);
+
+            return new ModelAndView(map, "index");
+        }, new ThymeleafTemplateEngine());
+        
         get("/alue/:id", (req, res) -> {
             HashMap map = new HashMap<>();
             int alueid = Integer.parseInt(req.params(":id"));

@@ -11,21 +11,23 @@
         <a href="http://localhost:4567/"><font size="7" color="red" face="verdana">Foorumi</font></a>
         <h2 th:text="${teksti}">testi</h2>
         
-        <h4> <a th:href="@{~/alue/{id}(id=${alue.alueId})}"><span th:text="${alue.nimi}"> Alue </span></a>: 
+        <h4> <a th:href="@{~/alue/{id}/1(id=${alue.alueId})}"><span th:text="${alue.nimi}"> Alue </span></a>: 
             <span th:text="${keskustelu}"> Keskustelu </span>
         </h4>
         
-        <ol>
+        <ul>
             <li th:each="viesti : ${viestit}"> 
-                <span th:text="${viesti.sisalto}"> sisalto </span> 
-                <span> t.</span>
-                <span th:text="${viesti.nimimerkki}"> nimimerkki </span> 
+                <span th:text="${viesti.sisalto}"> sisalto </span>
+                <span><br/>t.</span>
+                <span th:text="${viesti.nimimerkki}"> nimimerkki </span>
+                <span> Lähetetty: </span>
+                <span th:text="${viesti.aika}"> aika </span>
             </li>
-        </ol>
+        </ul>
         
         <h4>Lisää viesti:</h4>
         
-        <form method="POST" th:action="@{~/keskustelu/{id}(id=${keskusteluid})}">
+        <form method="POST" th:action="@{~/keskustelu/{id}/1(id=${keskusteluid})}">
             Sisältö:<br/>
             <input type="text" name="sisalto"/><br/>
             Nimimerkki:<br/>

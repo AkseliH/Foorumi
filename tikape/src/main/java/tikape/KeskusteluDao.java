@@ -19,7 +19,10 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
     @Override
     public Keskustelu findOne(Integer key) throws SQLException{
         Connection connection = database.getConnection();
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM Keskustelu WHERE keskusteluid = ?");
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT Keskustelu.*, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
+                        + "FROM Keskustelu LEFT JOIN Viesti ON Viesti.keskusteluid = Keskustelu.keskusteluid "
+                        + "WHERE Keskustelu.keskusteluid = ?");
         statement.setObject(1, key);
 
         ResultSet results = statement.executeQuery();
@@ -30,9 +33,11 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
 
         Integer keskusteluId = results.getInt("keskusteluid");
         String otsikko = results.getString("otsikko");
+        Integer viestienMaara = results.getInt("viestienMaara");
+        Timestamp viimeisinViesti = results.getTimestamp("viimeisinViesti");
         Alue alue = alueDao.findOne(results.getInt("alueid"));
 
-        Keskustelu keskustelu = new Keskustelu(keskusteluId, otsikko);
+        Keskustelu keskustelu = new Keskustelu(keskusteluId, otsikko, viimeisinViesti, viestienMaara);
         keskustelu.setAlue(alue);
         
         results.close();

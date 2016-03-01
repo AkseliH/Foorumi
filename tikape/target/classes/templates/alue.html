@@ -18,7 +18,7 @@
                 <th> Viimeisin viesti </th>
             </tr>
             <tr th:each="keskustelu : ${keskustelut}">
-                <td>  <a th:href="@{~/keskustelu/{id}(id=${keskustelu.keskusteluId})}"><span th:text="${keskustelu.otsikko}">linkki</span></a></td>
+                <td>  <a th:href="@{~/keskustelu/{id}/1(id=${keskustelu.keskusteluId})}"><span th:text="${keskustelu.otsikko}">linkki</span></a></td>
                 <td th:text="${keskustelu.viestienMaara}"> viestienMaara </td>
                 <td th:text="${keskustelu.viimeisinViesti}"> viimeisinViesti </td>
             </tr>
@@ -26,7 +26,7 @@
         
         <h4>Lisää keskustelu:</h4>
         
-        <form method="POST" th:action="@{~/alue/{id}(id=${alueid})}">
+        <form method="POST" th:action="@{~/alue/{id}/1(id=${alueid})}">
             Otsikko:<br/>
             <input type="text" name="otsikko"/><br/>
             Sisältö:<br/>

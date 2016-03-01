@@ -24,11 +24,12 @@ public class Main {
             return new ModelAndView(map, "index");
         }, new ThymeleafTemplateEngine());
         
-        get("/alue/:id", (req, res) -> {
+        get("/alue/:id/:sivu", (req, res) -> {
             HashMap map = new HashMap<>();
             int alueid = Integer.parseInt(req.params(":id"));
+            int sivu = Integer.parseInt(req.params(":sivu"));
             
-            Alue alue = alueDao.findOneWithKeskustelut(alueid,1);
+            Alue alue = alueDao.findOneWithKeskustelut(alueid,sivu);
             
             map.put("alueid", alueid);
             map.put("alue", alue.getNimi());
@@ -38,11 +39,12 @@ public class Main {
         }, new ThymeleafTemplateEngine()); 
         
         
-        get("/keskustelu/:id", (req, res) -> {
+        get("/keskustelu/:id/:sivu", (req, res) -> {
             HashMap map = new HashMap<>();
             int keskusteluid = Integer.parseInt(req.params(":id"));
+            int sivu = Integer.parseInt(req.params(":sivu"));
             
-            Keskustelu keskustelu = keskusteluDao.findOneWithViestit(keskusteluid,1);
+            Keskustelu keskustelu = keskusteluDao.findOneWithViestit(keskusteluid,sivu);
             
             map.put("keskusteluid", keskusteluid);
             map.put("alue", keskustelu.getAlue());
@@ -64,8 +66,9 @@ public class Main {
             return new ModelAndView(map, "index");
         }, new ThymeleafTemplateEngine());
         
-        post("/alue/:id", (req, res) -> {
+        post("/alue/:id/:sivu", (req, res) -> {
             int alueid = Integer.parseInt(req.params(":id"));
+            int sivu = Integer.parseInt(req.params(":sivu"));
             
             String otsikko = req.queryParams("otsikko");
             String sisalto = req.queryParams("sisalto");
@@ -76,7 +79,7 @@ public class Main {
             
             HashMap map = new HashMap<>();
 
-            Alue alue = alueDao.findOneWithKeskustelut(alueid,1);
+            Alue alue = alueDao.findOneWithKeskustelut(alueid, sivu);
             map.put("alueid", alueid);
             map.put("alue", alue.getNimi());
             map.put("keskustelut", alue.getKeskustelut());
@@ -84,8 +87,9 @@ public class Main {
             return new ModelAndView(map, "alue");
         }, new ThymeleafTemplateEngine());
         
-        post("/keskustelu/:id", (req, res) -> {
+        post("/keskustelu/:id/:sivu", (req, res) -> {
             int keskusteluid = Integer.parseInt(req.params(":id"));
+            int sivu = Integer.parseInt(req.params(":sivu"));
             
             String sisalto = req.queryParams("sisalto");
             String nimimerkki = req.queryParams("nimimerkki");
@@ -95,7 +99,7 @@ public class Main {
             
             HashMap map = new HashMap<>();
                         
-            Keskustelu keskustelu = keskusteluDao.findOneWithViestit(keskusteluid,1);
+            Keskustelu keskustelu = keskusteluDao.findOneWithViestit(keskusteluid,sivu);
             
             map.put("keskusteluid", keskusteluid);
             map.put("alue", keskustelu.getAlue());

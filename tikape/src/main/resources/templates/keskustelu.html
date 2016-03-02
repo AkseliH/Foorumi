@@ -8,28 +8,37 @@
     </head>
     <body>
         
-        <a href="http://localhost:4567/"><font size="7" color="red" face="verdana">Foorumi</font></a>
-        <h2 th:text="${teksti}">testi</h2>
+        <a href="/"><font size="7" color="red" face="verdana">Foorumi</font></a>
         
         <h4> <a th:href="@{~/alue/{id}/1(id=${alue.alueId})}"><span th:text="${alue.nimi}"> Alue </span></a>: 
-            <span th:text="${keskustelu}"> Keskustelu </span>
+            <span th:text="${keskustelu.otsikko}"> Keskustelu </span>
         </h4>
+        
         
         <ul>
             <li th:each="viesti : ${viestit}"> 
-                <span th:text="${viesti.sisalto}"> sisalto </span>
+                <p><span th:text="${viesti.sisalto}"> sisalto </span>
                 <span><br/>t.</span>
                 <span th:text="${viesti.nimimerkki}"> nimimerkki </span>
                 <span> Lähetetty: </span>
-                <span th:text="${viesti.aika}"> aika </span>
+                <span th:text="${viesti.aika}"> aika </span></p>
             </li>
         </ul>
         
+        
+        <div th:if="${sivu}&gt;1">
+            <a th:href="@{~/keskustelu/{id}/{edellinen}(id=${keskustelu.keskusteluId},edellinen=${sivu}-1)}">Edellinen sivu</a>
+        </div>
+        <div th:if="${sivu}&lt;((${keskustelu.viestienMaara-1})-(${keskustelu.viestienMaara-1})%10)/10+1">
+            <a th:href="@{~/keskustelu/{id}/{seuraava}(id=${keskustelu.keskusteluId},seuraava=${sivu}+1)}">Seuraava sivu</a>
+        </div>   
+        
         <h4>Lisää viesti:</h4>
         
-        <form method="POST" th:action="@{~/keskustelu/{id}/1(id=${keskusteluid})}">
+        <form method="POST" th:action="@{~/keskustelu/{id}/{viimeinen}
+              (id=${keskustelu.keskusteluId},viimeinen=((${keskustelu.viestienMaara})-(${keskustelu.viestienMaara})%10)/10+1)}">
             Sisältö:<br/>
-            <input type="text" name="sisalto"/><br/>
+            <textarea name="sisalto"/><br/>
             Nimimerkki:<br/>
             <input type="text" name="nimimerkki"/><br/>
             <input type="submit" value="Lisää viesti"/>

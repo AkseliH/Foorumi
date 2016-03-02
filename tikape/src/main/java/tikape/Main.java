@@ -31,8 +31,8 @@ public class Main {
             
             Alue alue = alueDao.findOneWithKeskustelut(alueid,sivu);
             
-            map.put("alueid", alueid);
-            map.put("alue", alue.getNimi());
+            map.put("sivu", sivu);
+            map.put("alue", alue);
             map.put("keskustelut", alue.getKeskustelut());
 
             return new ModelAndView(map, "alue");
@@ -46,9 +46,9 @@ public class Main {
             
             Keskustelu keskustelu = keskusteluDao.findOneWithViestit(keskusteluid,sivu);
             
-            map.put("keskusteluid", keskusteluid);
+            map.put("sivu", sivu);
+            map.put("keskustelu", keskustelu);
             map.put("alue", keskustelu.getAlue());
-            map.put("keskustelu", keskustelu.getOtsikko());
             map.put("viestit", keskustelu.getViestit());
             
             return new ModelAndView(map, "keskustelu");
@@ -80,8 +80,8 @@ public class Main {
             HashMap map = new HashMap<>();
 
             Alue alue = alueDao.findOneWithKeskustelut(alueid, sivu);
-            map.put("alueid", alueid);
-            map.put("alue", alue.getNimi());
+            map.put("sivu", sivu);
+            map.put("alue", alue);
             map.put("keskustelut", alue.getKeskustelut());
 
             return new ModelAndView(map, "alue");
@@ -101,9 +101,9 @@ public class Main {
                         
             Keskustelu keskustelu = keskusteluDao.findOneWithViestit(keskusteluid,sivu);
             
-            map.put("keskusteluid", keskusteluid);
+            map.put("sivu", sivu);
+            map.put("keskustelu", keskustelu);
             map.put("alue", keskustelu.getAlue());
-            map.put("keskustelu", keskustelu.getOtsikko());
             map.put("viestit", keskustelu.getViestit());
             
             return new ModelAndView(map, "keskustelu");

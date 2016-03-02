@@ -7,6 +7,7 @@ public class Alue {
     private Integer alueId;
     private String nimi;
     private int viestienMaara;
+    private int keskustelujenMaara;
     private Timestamp viimeisinViesti;
     private List<Keskustelu> keskustelut;
     
@@ -56,6 +57,10 @@ public class Alue {
         return viestienMaara;
     }
 
+    public int getKeskustelujenMaara() {
+        return keskustelujenMaara;
+    }
+    
     public Timestamp getViimeisinViesti() {
         return viimeisinViesti;
     }
@@ -64,6 +69,10 @@ public class Alue {
         this.viestienMaara = viestienMaara;
     }
 
+    public void setKeskustelujenMaara(int keskustelujenMaara) {
+        this.keskustelujenMaara = keskustelujenMaara;
+    }
+        
     public void setViimeisinViesti(Timestamp viimeisinViesti) {
         this.viimeisinViesti = viimeisinViesti;
     }

@@ -14,7 +14,10 @@ public class AlueDao implements Dao<Alue, Integer> {
     @Override
     public Alue findOne(Integer key) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM Alue WHERE alueid = ?");
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT Alue.*, COUNT(Keskustelu.keskusteluid) AS keskustelujenMaara "
+                        + "FROM Alue LEFT JOIN Keskustelu ON Keskustelu.alueid = Alue.alueid "
+                        + "WHERE Alue.alueid = ?");
         statement.setObject(1, key);
 
         ResultSet results = statement.executeQuery();
@@ -25,8 +28,10 @@ public class AlueDao implements Dao<Alue, Integer> {
 
         Integer alueId = results.getInt("alueid");
         String nimi = results.getString("nimi");
+        Integer keskustelujenMaara = results.getInt("keskustelujenMaara");
 
         Alue alue = new Alue(alueId, nimi);
+        alue.setKeskustelujenMaara(keskustelujenMaara);
         
         results.close();
         statement.close();
@@ -77,7 +82,7 @@ public class AlueDao implements Dao<Alue, Integer> {
                 + "SELECT *, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
                 + "FROM Alue LEFT JOIN Keskustelu ON Alue.alueid = Keskustelu.alueid "
                 + "LEFT JOIN Viesti ON Keskustelu.keskusteluid = Viesti.keskusteluid "
-                + "GROUP BY Alue.alueid ORDER BY Alue.nimi ASC");
+                + "GROUP BY Alue.alueid ORDER BY Alue.nimi ASC LIMIT 50");
 
         ResultSet results = statement.executeQuery();
         

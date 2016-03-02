@@ -7,9 +7,9 @@
     </head>
     <body>
         
-        <a href="http://localhost:4567/"><font size="7" color="red" face="verdana">Foorumi</font></a>
+        <a href="/"><font size="7" color="red" face="verdana">Foorumi</font></a>
         
-        <h4 th:text="${alue}"> Alue </h4>
+        <h4 th:text="${alue.nimi}"> Alue </h4>
         
         <table>
             <tr>
@@ -23,14 +23,22 @@
                 <td th:text="${keskustelu.viimeisinViesti}"> viimeisinViesti </td>
             </tr>
         </table>
+        <br/>
         
+        <div th:if="${sivu}&gt;1">
+            <a th:href="@{~/alue/{id}/{edellinen}(id=${alue.alueId},edellinen=${sivu}-1)}">Edellinen sivu</a>
+        </div>
+        <div th:if="${sivu}&lt;((${alue.keskustelujenMaara-1})-(${alue.keskustelujenMaara-1})%10)/10+1">
+            <a th:href="@{~/alue/{id}/{seuraava}(id=${alue.alueId},seuraava=${sivu}+1)}">Seuraava sivu</a>
+        </div>    
+                      
         <h4>Lisää keskustelu:</h4>
         
-        <form method="POST" th:action="@{~/alue/{id}/1(id=${alueid})}">
+        <form method="POST" th:action="@{~/alue/{id}/1(id=${alue.alueId})}">
             Otsikko:<br/>
             <input type="text" name="otsikko"/><br/>
             Sisältö:<br/>
-            <input type="text" name="sisalto"/><br/>
+            <textarea name="sisalto"/><br/>
             Nimimerkki:<br/>
             <input type="text" name="nimimerkki"/><br/>
             <input type="submit" value="Lisää keskustelu"/>

@@ -7,6 +7,7 @@
         <meta charset="utf-8" />
     </head>
     <body>
+          
         
         <a href="/"><font size="7" color="red" face="verdana">Foorumi</font></a>
         
@@ -15,7 +16,7 @@
         </h4>
         
         
-        <ul>
+        <ul style="width:900px">
             <li th:each="viesti : ${viestit}"> 
                 <p><span th:text="${viesti.sisalto}"> sisalto </span>
                 <span><br/>t.</span>
@@ -38,10 +39,10 @@
         <form method="POST" th:action="@{~/keskustelu/{id}/{viimeinen}
               (id=${keskustelu.keskusteluId},viimeinen=((${keskustelu.viestienMaara})-(${keskustelu.viestienMaara})%10)/10+1)}">
             Sisältö:<br/>
-            <textarea name="sisalto"/><br/>
+            <textarea name="sisalto" required="required"/><br/>
             Nimimerkki:<br/>
-            <input type="text" name="nimimerkki"/><br/>
-            <input type="submit" value="Lisää viesti"/>
+            <input type="text" name="nimimerkki" required="required"/><br/>
+            <input type="submit" value="Lisää viesti" />
         </form>
     </body>
 </html>

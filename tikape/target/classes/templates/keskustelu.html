@@ -8,7 +8,6 @@
     </head>
     <body>
           
-        
         <a href="/"><font size="7" color="red" face="verdana">Foorumi</font></a>
         
         <h4> <a th:href="@{~/alue/{id}/1(id=${alue.alueId})}"><span th:text="${alue.nimi}"> Alue </span></a>: 
@@ -41,7 +40,7 @@
             Sisältö:<br/>
             <textarea name="sisalto" required="required"/><br/>
             Nimimerkki:<br/>
-            <input type="text" name="nimimerkki" required="required"/><br/>
+            <input type="text" name="nimimerkki" required="required" maxlength="50"/><br/>
             <input type="submit" value="Lisää viesti" />
         </form>
     </body>

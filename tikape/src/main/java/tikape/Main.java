@@ -56,7 +56,9 @@ public class Main {
         
         post("/", (req, res) -> {
             String nimi = req.queryParams("nimi");
+            if(!alueDao.exists(nimi)) {
             alueDao.insert(nimi);
+            }
             
             HashMap map = new HashMap<>();
             map.put("teksti", "Keskustelualueet:");

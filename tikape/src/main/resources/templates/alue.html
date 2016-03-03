@@ -37,11 +37,11 @@
         
         <form method="POST" th:action="@{~/alue/{id}/1(id=${alue.alueId})}">
             Otsikko:<br/>
-            <input type="text" name="otsikko" required="required"/><br/>
+            <input type="text" name="otsikko" required="required" maxlength="100"/><br/>
             Sisältö:<br/>
             <textarea name="sisalto" required="required"/><br/>
             Nimimerkki:<br/>
-            <input type="text" name="nimimerkki" required="required"/><br/>
+            <input type="text" name="nimimerkki" required="required" maxlength="50"/><br/>
             <input type="submit" value="Lisää keskustelu"/>
         </form>
     </body>

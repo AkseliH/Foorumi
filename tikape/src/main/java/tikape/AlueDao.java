@@ -160,5 +160,23 @@ public class AlueDao implements Dao<Alue, Integer> {
         
         statement.close();
         connection.close(); 
+
     }
+    
+    public boolean exists(String nimi) throws SQLException {
+        Connection connection = database.getConnection();
+        
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Alue WHERE Alue.nimi = ?");
+        stmt.setObject(1, nimi);
+        ResultSet result = stmt.executeQuery();
+        
+        boolean exists = result.next();
+        
+        result.close();
+        stmt.close();
+        connection.close();
+        
+        return exists;
+    }
+    
 }

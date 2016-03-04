@@ -26,6 +26,8 @@
         </table>
         <br/>
         
+        <span>Sivu: </span><span th:text="${sivu}"> Sivunumero </span><span> / </span>
+        <span th:text="((${alue.keskustelujenMaara-1})-(${alue.keskustelujenMaara-1})%10)/10+1"> Viimeinensivu </span><br/>
         <div th:if="${sivu}&gt;1">
             <a th:href="@{~/alue/{id}/{edellinen}(id=${alue.alueId},edellinen=${sivu}-1)}">Edellinen sivu</a>
         </div>

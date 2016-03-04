@@ -5,36 +5,47 @@
     <head>
         <title> Foorumi </title>
         <meta charset="utf-8" />
+        <style>
+            ul{
+                list-style-type: none;
+                width: 900px;
+                text-indent: -1.2em;
+                word-wrap: break-word;
+            }
+        </style>
     </head>
     <body>
-          
+
         <a href="/"><font size="7" color="red" face="verdana">Foorumi</font></a>
-        
+
         <h4> <a th:href="@{~/alue/{id}/1(id=${alue.alueId})}"><span th:text="${alue.nimi}"> Alue </span></a>: 
             <span th:text="${keskustelu.otsikko}"> Keskustelu </span>
         </h4>
-        
-        
-        <ul style="width:900px">
-            <li th:each="viesti : ${viestit}"> 
-                <p><span th:text="${viesti.sisalto}"> sisalto </span>
-                <span><br/>t.</span>
-                <span th:text="${viesti.nimimerkki}"> nimimerkki </span>
-                <span> Lähetetty: </span>
-                <span th:text="${viesti.aika}"> aika </span></p>
+
+
+        <ul>
+            <li th:each="viesti,viestinnumero : ${viestit}"> 
+                <p><span th:text="${viestinnumero.count}+${sivu-1}*10"></span><span>. </span>
+                    <span th:text="${viesti.sisalto}"> sisalto </span>
+                    <span><br/>t.</span>
+                    <span th:text="${viesti.nimimerkki}"> nimimerkki </span>
+                    <span> Lähetetty: </span>
+                    <span th:text="${viesti.aika}"> aika </span></p>
             </li>
         </ul>
-        
-        
+
+
+        <span>Sivu: </span><span th:text="${sivu}"> Sivunumero </span><span> / </span>
+        <span th:text="((${keskustelu.viestienMaara-1})-(${keskustelu.viestienMaara-1})%10)/10+1"> Viimeinensivu </span><br/>
         <div th:if="${sivu}&gt;1">
             <a th:href="@{~/keskustelu/{id}/{edellinen}(id=${keskustelu.keskusteluId},edellinen=${sivu}-1)}">Edellinen sivu</a>
         </div>
         <div th:if="${sivu}&lt;((${keskustelu.viestienMaara-1})-(${keskustelu.viestienMaara-1})%10)/10+1">
             <a th:href="@{~/keskustelu/{id}/{seuraava}(id=${keskustelu.keskusteluId},seuraava=${sivu}+1)}">Seuraava sivu</a>
         </div>   
-        
+
         <h4>Lisää viesti:</h4>
-        
+
         <form method="POST" th:action="@{~/keskustelu/{id}/{viimeinen}
               (id=${keskustelu.keskusteluId},viimeinen=((${keskustelu.viestienMaara})-(${keskustelu.viestienMaara})%10)/10+1)}">
             Sisältö:<br/>

@@ -164,32 +164,65 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
     public void insertWithViesti(Integer alueId, String otsikko, String sisalto, Timestamp aika, String nimimerkki) throws SQLException {
         Connection connection = database.getConnection();
         
-        PreparedStatement statement = connection.prepareStatement("BEGIN TRANSACTION");
-        statement.execute();
-        
-        try {
-            statement = connection.prepareStatement("INSERT INTO Keskustelu (alueid, otsikko) VALUES (?, ?);");
-            statement.setObject(1, alueId);
-            statement.setObject(2, otsikko);
-            statement.executeUpdate();
-
-            statement = connection.prepareStatement("INSERT INTO Viesti (keskusteluid, sisalto, aika, nimimerkki) "
-                    + "VALUES ((SELECT last_insert_rowid()), ?, ?, ?);");
-            statement.setObject(1, sisalto);
-            statement.setObject(2, aika.getTime());
-            statement.setObject(3, nimimerkki);
-            statement.executeUpdate();
+        if (database.isPostgre()) {
             
-            statement = connection.prepareStatement("COMMIT;");
+            PreparedStatement statement = connection.prepareStatement("BEGIN TRANSACTION");
             statement.execute();
 
+            try {
+                statement = connection.prepareStatement("INSERT INTO Keskustelu (alueid, otsikko) VALUES (?, ?);");
+                statement.setObject(1, alueId);
+                statement.setObject(2, otsikko);
+                statement.executeUpdate();
+
+                statement = connection.prepareStatement("INSERT INTO Viesti (keskusteluid, sisalto, aika, nimimerkki) "
+                        + "VALUES ((SELECT last_insert_rowid()), ?, ?, ?);");
+                statement.setObject(1, sisalto);
+                statement.setObject(2, aika.getTime());
+                statement.setObject(3, nimimerkki);
+                statement.executeUpdate();
+
+                statement = connection.prepareStatement("COMMIT;");
+                statement.execute();
+
+
+            } catch (SQLException e) {
+                statement = connection.prepareStatement("ROLLBACK;");
+                statement.execute();
+            }
+
+            statement.close();
+            connection.close();
+            
+        } else {
         
-        } catch (SQLException e) {
-            statement = connection.prepareStatement("ROLLBACK;");
+            PreparedStatement statement = connection.prepareStatement("BEGIN TRANSACTION");
             statement.execute();
+
+            try {
+                statement = connection.prepareStatement("INSERT INTO Keskustelu (alueid, otsikko) VALUES (?, ?);");
+                statement.setObject(1, alueId);
+                statement.setObject(2, otsikko);
+                statement.executeUpdate();
+
+                statement = connection.prepareStatement("INSERT INTO Viesti (keskusteluid, sisalto, aika, nimimerkki) "
+                        + "VALUES ((SELECT last_insert_rowid()), ?, ?, ?);");
+                statement.setObject(1, sisalto);
+                statement.setObject(2, aika.getTime());
+                statement.setObject(3, nimimerkki);
+                statement.executeUpdate();
+
+                statement = connection.prepareStatement("COMMIT;");
+                statement.execute();
+
+
+            } catch (SQLException e) {
+                statement = connection.prepareStatement("ROLLBACK;");
+                statement.execute();
+            }
+
+            statement.close();
+            connection.close();
         }
-        
-        statement.close();
-        connection.close(); 
     }
 }

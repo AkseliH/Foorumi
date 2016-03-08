@@ -11,6 +11,8 @@ public class Database {
 
     public Database(String databaseAddress) throws Exception {
         this.databaseAddress = databaseAddress;
+        
+//        init();
     }
 
     public Connection getConnection() throws SQLException {
@@ -61,12 +63,7 @@ public class Database {
     private List<String> postgreLauseet() {
         ArrayList<String> lista = new ArrayList<>();
 
-        // tietokantataulujen luomiseen tarvittavat komennot suoritusjärjestyksessä
-        lista.add("DROP TABLE Viesti;");
-        lista.add("DROP TABLE Keskustelu;");
-        lista.add("DROP TABLE Alue;");
-        
-        
+        // tietokantataulujen luomiseen tarvittavat komennot suoritusjärjestyksessä     
         lista.add("CREATE TABLE Alue (alueid SERIAL PRIMARY KEY, nimi varchar(50) UNIQUE NOT NULL);");
                 
         lista.add("CREATE TABLE Keskustelu (keskusteluid SERIAL PRIMARY KEY, "
@@ -93,5 +90,9 @@ public class Database {
                 + "FOREIGN KEY (keskusteluid) REFERENCES Keskustelu (keskusteluid));");
 
         return lista;
+    }
+    
+    public boolean isPostgre() {
+        return this.databaseAddress.contains("postgres");
     }
 }

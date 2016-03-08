@@ -12,7 +12,7 @@ public class Database {
     public Database(String databaseAddress) throws Exception {
         this.databaseAddress = databaseAddress;
         
-//        init();
+        init();
     }
 
     public Connection getConnection() throws SQLException {

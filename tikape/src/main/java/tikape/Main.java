@@ -9,7 +9,20 @@ import spark.template.thymeleaf.ThymeleafTemplateEngine;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Database database = new Database("jdbc:sqlite:Foorumi.db");
+        
+        if (System.getenv("PORT") != null) {
+            port(Integer.valueOf(System.getenv("PORT")));
+        }
+        
+        
+        String jdbcOsoite = "jdbc:sqlite:Foorumi.db";
+        
+        if (System.getenv("DATABASE_URL") != null) {
+            jdbcOsoite = System.getenv("DATABASE_URL");
+        }
+        
+        
+        Database database = new Database(jdbcOsoite);
         AlueDao alueDao = new AlueDao(database);
         KeskusteluDao keskusteluDao = new KeskusteluDao(database, alueDao);
         ViestiDao viestiDao = new ViestiDao(database, keskusteluDao);

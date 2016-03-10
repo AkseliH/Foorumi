@@ -206,7 +206,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
                 statement.executeUpdate();
 
                 statement = connection.prepareStatement("INSERT INTO Viesti (keskusteluid, sisalto, aika, nimimerkki) "
-                        + "VALUES ((SELECT last_insert_rowid()), ?, ?, ?);");
+                        + "VALUES ((SELECT LASTVAL(), ?, ?, ?);");
                 statement.setObject(1, sisalto);
                 statement.setObject(2, aika.getTime());
                 statement.setObject(3, nimimerkki);

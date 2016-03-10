@@ -10,7 +10,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         
-        if (System.getenv("PORT") != null) {
+        System.out.println("Hello world!");
+        
+        /*if (System.getenv("PORT") != null) {
             port(Integer.valueOf(System.getenv("PORT")));
         }
         
@@ -122,6 +124,6 @@ public class Main {
             map.put("viestit", keskustelu.getViestit());
             
             return new ModelAndView(map, "keskustelu");
-        }, new ThymeleafTemplateEngine());
+        }, new ThymeleafTemplateEngine());*/
     }
 }

@@ -95,7 +95,7 @@ public class ViestiDao implements Dao<Viesti, Integer> {
             Timestamp aika = rs.getTimestamp("aika");
             viestit.add(new Viesti(viestiId, sisalto, nimimerkki, aika));
         }
-        
+
         rs.close();
         stmt.close();
         con.close();
@@ -106,27 +106,41 @@ public class ViestiDao implements Dao<Viesti, Integer> {
     @Override
     public void delete(Integer key) throws SQLException {
         Connection connection = database.getConnection();
-        
+
         PreparedStatement statement = connection.prepareStatement("DELETE * FROM Viesti WHERE viestiid = ?");
         statement.setObject(1, key);
         statement.executeUpdate();
-        
+
         statement.close();
         connection.close();
     }
-    
+
     public void insert(Integer keskusteluId, String sisalto, Timestamp aika, String nimimerkki) throws SQLException {
         Connection connection = database.getConnection();
-        
-        PreparedStatement statement = connection.prepareStatement("INSERT INTO Viesti "
-                + "(keskusteluid, sisalto, aika, nimimerkki) VALUES (?, ?, ?, ?)");
-        statement.setObject(1, keskusteluId);
-        statement.setObject(2, sisalto);
-        statement.setObject(3, aika.getTime());
-        statement.setObject(4, nimimerkki);
-        statement.executeUpdate();
-        
-        statement.close();
-        connection.close(); 
+
+        if (database.isPostgre()) {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO Viesti "
+                    + "(keskusteluid, sisalto, aika, nimimerkki) VALUES (?, ?, to_timestamp(?), ?)");
+            statement.setObject(1, keskusteluId);
+            statement.setObject(2, sisalto);
+            statement.setObject(3, aika.getTime() / 1000);
+            statement.setObject(4, nimimerkki);
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        } else {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO Viesti "
+                    + "(keskusteluid, sisalto, aika, nimimerkki) VALUES (?, ?, ?, ?)");
+            statement.setObject(1, keskusteluId);
+            statement.setObject(2, sisalto);
+            statement.setObject(3, aika.getTime());
+            statement.setObject(4, nimimerkki);
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        }
+
     }
 }

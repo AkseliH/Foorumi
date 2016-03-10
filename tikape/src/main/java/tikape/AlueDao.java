@@ -17,7 +17,8 @@ public class AlueDao implements Dao<Alue, Integer> {
         PreparedStatement statement = connection.prepareStatement(
                 "SELECT Alue.*, COUNT(Keskustelu.keskusteluid) AS keskustelujenMaara "
                         + "FROM Alue LEFT JOIN Keskustelu ON Keskustelu.alueid = Alue.alueid "
-                        + "WHERE Alue.alueid = ?");
+                        + "WHERE Alue.alueid = ? "
+                        + "GROUP BY Alue.alueid");
         statement.setObject(1, key);
 
         ResultSet results = statement.executeQuery();
@@ -45,7 +46,7 @@ public class AlueDao implements Dao<Alue, Integer> {
         
         Connection connection = database.getConnection();
         PreparedStatement statement = connection.prepareStatement(
-                "SELECT *, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
+                "SELECT Keskustelu.*, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
                     + "FROM Keskustelu LEFT JOIN Viesti ON Viesti.keskusteluid = Keskustelu.keskusteluid "
                     + "WHERE Keskustelu.alueid = ? GROUP BY Keskustelu.keskusteluid ORDER BY viimeisinViesti DESC "
                     + "LIMIT 10 OFFSET ?");
@@ -79,7 +80,7 @@ public class AlueDao implements Dao<Alue, Integer> {
     public List<Alue> findAll() throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement statement = connection.prepareStatement(""
-                + "SELECT *, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
+                + "SELECT Alue.*, COUNT(Viesti.viestiid) AS viestienMaara, MAX(Viesti.aika) AS viimeisinViesti "
                 + "FROM Alue LEFT JOIN Keskustelu ON Alue.alueid = Keskustelu.alueid "
                 + "LEFT JOIN Viesti ON Keskustelu.keskusteluid = Viesti.keskusteluid "
                 + "GROUP BY Alue.alueid ORDER BY Alue.nimi ASC LIMIT 50");
